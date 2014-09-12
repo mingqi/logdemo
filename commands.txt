@@ -1,0 +1,127 @@
+PUT /demo
+{
+	"mappings" : {
+		"talog" : {
+			"properties" : {
+               "category": {
+                  "type": "string",
+                  "index": "not_analyzed"
+               },
+               "level": {
+                  "type": "string",
+                  "index": "not_analyzed"
+               },
+               "host": {
+                  "type": "string",
+                  "index": "not_analyzed"
+               },
+               "path": {
+                  "type": "string",
+                  "index": "not_analyzed"
+               },
+               "message": {
+                  "type": "string"
+               },
+               "timestamp": {
+                  "type": "date",
+                  "format": "dateOptionalTime"
+               }
+			}
+		}
+	}
+}
+
+### search by time range and show the time series count ###
+
+GET /demo/talog/_search?search_type=count
+{
+  "query": {
+    "filtered": {
+      "query": {
+        "match_all": {}
+      }, 
+      "filter": {
+        "range": {
+          "timestamp": {
+            "from": "2014-09-04T14:36:00",
+            "to":  "2014-09-04T14:50:53"
+          }
+        }
+      }
+    }
+  },
+  
+  "aggs": { -- aggregation
+    "event_over_time": {
+      "date_histogram": {
+        "field": "timestamp",
+        "interval": "3m"
+      }
+    }
+  }
+}
+
+
+### see a value list for a attributes
+GET /demo/talog/_search?search_type=count
+{
+  "query": {
+    "filtered": {
+      "query": {
+        "match_all": {}
+      }, 
+      "filter": {
+        "range": {
+          "timestamp": {
+            "from": "2014-09-04T14:36:00",
+            "to":  "2014-09-04T14:50:53"
+          }
+        }
+      }
+    }
+  },
+  
+  "aggs": {
+    "unique_number_for_attributes": {
+      "terms": {
+        "field": "level",
+        "size": 10
+      }
+    }
+  }
+}
+
+###############
+GET /demo/talog/_search?search_type=count
+{
+  "query": {
+    "filtered": {
+      "query": {
+        "match_phrase": {
+          "message": "RemoteClientBase._request(),"
+        }
+      }, 
+      "filter": {
+        "range": {
+          "timestamp": {
+            "from": "2014-09-04T14:20:00",
+            "to":  "2014-09-04T14:56:53"
+          }
+        }
+      }
+    }
+  },
+  
+  "aggs": {
+    "unique_number_for_attributes": {
+      "terms": {
+        "script": "fortest", 
+        "lang": "groovy", 
+        "params": {
+          "regexp" : "RemoteClientBase[.]_request[(][)],(\\w+),"
+        }, 
+        "size": 5
+      }
+    }
+  }
+}

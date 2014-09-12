@@ -1,0 +1,14 @@
+{
+  "name": "logdemo",
+  "description": "log demo",
+  "version": "0.0.1",
+  "private": true,
+  "dependencies": {
+    "elasticsearch" : "*",
+    "line-by-line" : "*",
+    "commander" : "*",
+    "sleep" : "*"
+  },
+  "devDependencies" : {
+  }
+}
