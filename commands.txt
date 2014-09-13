@@ -97,15 +97,13 @@ GET /demo/talog/_search?search_type=count
   "query": {
     "filtered": {
       "query": {
-        "match_phrase": {
-          "message": "RemoteClientBase._request(),"
-        }
+        "match_all": {}
       }, 
       "filter": {
         "range": {
           "timestamp": {
-            "from": "2014-09-04T14:20:00",
-            "to":  "2014-09-04T14:56:53"
+            "from": "2014-09-03T14:20:00",
+            "to":  "2014-09-05T14:56:53"
           }
         }
       }
@@ -115,12 +113,23 @@ GET /demo/talog/_search?search_type=count
   "aggs": {
     "unique_number_for_attributes": {
       "terms": {
-        "script": "fortest", 
+        "script": "pattern_extract", 
         "lang": "groovy", 
         "params": {
-          "regexp" : "RemoteClientBase[.]_request[(][)],(\\w+),"
+          "pattern" : "RemoteClientBase[.]_request[(][)],(?<value>\\w+),"
         }, 
         "size": 5
+      },
+      "aggs": {
+        "value_count_of_level": {
+          "avg": {
+            "script": "pattern_extract",
+            "lang": "groovy",
+            "params": {
+              "pattern" : "RemoteClientBase[.]_request[(][)],\\w+,(?<value>\\d+)"
+            }
+          }
+        }
       }
     }
   }
