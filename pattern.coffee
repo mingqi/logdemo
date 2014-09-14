@@ -1,15 +1,52 @@
 ESCAPE = ['[',']','.','\\', '^', '$', '|', '?', '*', '+', '(', ')', '{', '}']
 
+attribute = () ->
+
+  return {
+
+    name : "xxx"
+
+    toBucket :  () ->
+
+
+    toMetrics : () ->
+      # ...
+    
+  }
+
 parse = (pattern) ->
-  # pattern is like: call db spend %dbtime%ms
-  p = /%([^%]+)%/ 
+  ## pattern is "key_search | search"
 
-  attrs = while m = p.exec(pattern) 
-    m[1]
+  querys = []
+  parses = []
+  for statment in pattern.split('|')
+    statment = statment.trim()
+    if statment.indexOf('parse') == 0
+      # this is attribute parse
+      parses.push parse(statment)
+    else
+      querys.push statment
 
-  if attrs.length == 0
-    throw new Error("not found attributes in pattern")
-   
+  # attrs = while m = p.exec(pattern) 
+  #   m[1]
+  
+  return {
+
+    query : {
+      match : "" 
+    }
+
+    filter : {
+      and : {
+
+      }
+    }
+
+    parse : [
+
+    ]
+  }
+
   return {
 
     attributes : attrs

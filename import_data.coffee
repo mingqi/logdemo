@@ -28,7 +28,10 @@ category = null
 level = null
 
 buffer = []
+count = 0
 lr.on "line", (line) ->
+  count += 1
+  return if count % 5 != 0
   m = pattern.exec line
   if not m
     # append to buffer
