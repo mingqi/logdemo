@@ -45,7 +45,7 @@ lr.on "line", (line) ->
         host: program.host
         path: program.path
         message: message
-        raw_message : message
+        raw_message : message.substring(0, 1000)
 
       # console.log obj
 

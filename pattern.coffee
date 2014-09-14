@@ -1,63 +1,55 @@
-ESCAPE = ['[',']','.','\\', '^', '$', '|', '?', '*', '+', '(', ')', '{', '}']
 
-attribute = () ->
+pattern = ( pattern_str ) ->
+  ESCAPE = ['\\','[',']','.', '^','$', '|', '?', '*', '+', '(', ')', '{', '}']
 
-  return {
+  escape = (str) ->
+    for e in ESCAPE
+      str = str.replace(e, "\\#{e}")
 
-    name : "xxx"
+    return str
+      
+  parse = (statment) ->
 
-    toBucket :  () ->
+    _p = /%(\w+)%/g
 
+    _attrs = while _r = _p.exec statment
+      _r[1] 
 
-    toMetrics : () ->
-      # ...
-    
-  }
+    return {
 
-parse = (pattern) ->
-  ## pattern is "key_search | search"
+      attributes : _attrs
 
-  querys = []
+      toExtract :  (attribute) ->
+        _r = escape(statment).replace("%#{attribute}%", "(?<value>\\w+)")
+        _r.replace(_p, '\\w+') 
+
+      toFilter : () ->
+        escape(statment).replace(_p, '\\w+')
+    }
+
+  terms = []
   parses = []
-  for statment in pattern.split('|')
+  for statment in pattern_str.split('|')
     statment = statment.trim()
     if statment.indexOf('parse') == 0
       # this is attribute parse
-      parses.push parse(statment)
+      parses.push parse(statment.substring(5).trim())
     else
-      querys.push statment
+      terms = terms.concat statment.split(/\s+/)
 
-  # attrs = while m = p.exec(pattern) 
-  #   m[1]
+  query = 
+    'bool' :
+      'must' : for term in terms 
+        'multi_match' : 
+          'query' : term
+          'fields' : ['_all'] 
   
   return {
 
-    query : {
-      match : "" 
-    }
+    query : query
 
-    filter : {
-      and : {
+    parses : parses
 
-      }
-    }
-
-    parse : [
-
-    ]
-  }
-
-  return {
-
-    attributes : attrs
-
-    toFilter : (attr) ->
-      # ...
-    
-    toExtractor : (attr) ->
-      # ...
-
-    fill : (attr, value) ->
-      # ...
-     
+    applyFilter :  (attribute, value) ->
+      pattern(pattern_str.replace("%#{attribute}%", value) )
   }
