@@ -19,12 +19,16 @@ PUT /demo
                   "type": "string",
                   "index": "not_analyzed"
                },
-               "message": {
-                  "type": "string"
-               },
                "timestamp": {
                   "type": "date",
                   "format": "dateOptionalTime"
+               },
+               "message": {
+                  "type": "string"
+               },
+               "row_message": {
+                  "type": "string",
+                  "index": "not_analyzed"
                }
 			}
 		}

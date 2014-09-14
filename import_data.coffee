@@ -6,18 +6,18 @@ elasticsearch = require('elasticsearch')
 
 
 program
+  .option('--day [day]', 'the day')
+  .option('--index [index]', 'the ES index')
+  .option('--type [type]', 'the ES type of index')
   .option('--host [host]', 'the host attribute')
   .option('--path [path]', 'the path attribute')
   .option('--batch [batch]', 'batch size', parseInt)
   .option('--sleep [sleep]', 'to sleep macroseconds', parseInt)
   .parse(process.argv)
 
-
 client = new elasticsearch.Client
   host: 'localhost:9200',
   log: 'warning'
-
-day = '2014-09-04'
 
 lr = new LineByLineReader(program.args[0]);
 
@@ -42,6 +42,7 @@ lr.on "line", (line) ->
         host: program.host
         path: program.path
         message: message
+        raw_message : message
 
       # console.log obj
 
@@ -51,7 +52,7 @@ lr.on "line", (line) ->
         # lr.pause()
         bulk_body = []
         for o in buffer
-          bulk_body.push {index: { _index:'demo', _type: 'talog'}}
+          bulk_body.push {index: { _index: program.index, _type: program.type}}
           bulk_body.push o
         buffer = []
         sleep.usleep(1000 * program.sleep)
@@ -66,7 +67,7 @@ lr.on "line", (line) ->
 
 
     message = m[4]
-    timestamp = day + "T" + m[3]
+    timestamp = program.day + "T" + m[3]
     category = m[2].trim()
     level = m[1]
 

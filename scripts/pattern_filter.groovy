@@ -1,7 +1,8 @@
 import java.util.regex.Matcher
 import java.util.regex.Pattern
 
-_value = _source.message
+_value = doc['raw_message'].value
+println doc['message']
 
 //_value = "RemoteClientBase._request(),DaoDaoTourismService,2 <main>"
 //regexp = "RemoteClientBase[.]_request[(][)],(\\w+),"
