@@ -15,7 +15,11 @@ if(m.find() && m.groupCount() > 0){
 	} else if(value.isFloat()){
 		return value.toFloat()
 	}else{
-		return value
+		if(onlyNumber){
+			return null
+		}else{
+			return value
+		}
 	}
 }else{
 	return null
